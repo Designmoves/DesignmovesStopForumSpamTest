@@ -19,7 +19,7 @@ script:
   # Run PHPUnit (Travis build passing icon)
   # - use configuration file located at: test/phpunit.xml.dist
   # - save a coverage report for Coveralls at: build/logs/clover.xml
-  - ./vendor/bin/phpunit --configuration test/phpunit.xml.dist --coverage-clover build/logs/clover.xml
+  - ./vendor/bin/phpunit --configuration ./phpunit.xml.dist --coverage-clover build/logs/clover.xml
 
 after_script:
   # Run coverage checker (Coveralls coverage icon)
