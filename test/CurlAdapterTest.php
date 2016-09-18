@@ -8,22 +8,54 @@ use Zend\Http\Client as ZendHttpClient;
 class ResponseTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var ZendHttpClient
+     * Test native PHP cURL as reference
+     * 
+     * @dataProvider providerUrls
      */
-    protected $httpClient;
+    public function testNativeCurl($uri)
+    {
+        $cUrl = curl_init();
+        curl_setopt_array($cUrl, [
+            CURLOPT_URL            => $uri,
+            CURLOPT_RETURNTRANSFER => true,
+        ]);
+        
+        $content = curl_exec($cUrl);  
+
+        $this->assertContains('<root>', $content);
+    }
   
     /**
      * @dataProvider providerUrls
      */
-    public function testHttpClientWithoutCurlOptions($uri)
+    public function testHttpClientWithCURLOPT_ENCODING($uri)
+    {
+        $config = [
+            'adapter'     => 'Zend\Http\Client\Adapter\Curl',
+            'curloptions' => [
+                CURLOPT_ENCODING => '',
+            ],
+        ];
+        $client = new ZendHttpClient($uri, $config);
+        $client->send();
+
+        $response = $client->getResponse();
+
+        $this->assertContains('<root>', $response->getContent());
+    }
+    
+    /**
+     * @dataProvider providerUrls
+     */
+    public function testHttpClientWithoutCURLOPT_ENCODING($uri)
     {
         $config = [
             'adapter' => 'Zend\Http\Client\Adapter\Curl',
         ];
-        $this->client = new ZendHttpClient($uri, $config);
-        $this->client->send();
+        $client = new ZendHttpClient($uri, $config);
+        $client->send();
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
 
         $this->assertContains('<root>', $response->getContent());
     }
